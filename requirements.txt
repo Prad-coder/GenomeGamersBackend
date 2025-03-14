@@ -9,6 +9,7 @@ Flask_Restful
 Flask_Cors
 PyJWT
 pandas
+progress
 numpy
 matplotlib
 seaborn
