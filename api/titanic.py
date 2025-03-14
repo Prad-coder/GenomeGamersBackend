@@ -7,7 +7,7 @@ from model.titanic import TitanicModel # Import the TitanicModel class from the 
 # from model.titanic import TitanicModel
 
 titanic_api = Blueprint('titanic_api', __name__,
-                   url_prefix='/api/titanic')
+                   url_prefix='/api')
 
 api = Api(titanic_api)
 class TitanicAPI:
