@@ -27,6 +27,7 @@ from api.messages_api import messages_api # Adi added this, messages for his web
 from api.carphoto import car_api
 from api.carChat import car_chat_api
 from api.titanic import titanic_api
+from api.points import points_api
 
 from api.vote import vote_api
 # database Initialization functions
@@ -39,6 +40,7 @@ from model.post import Post, initPosts
 from model.nestPost import NestPost, initNestPosts # Justin added this, custom format for his website
 from model.vote import Vote, initVotes
 from model.titanic import TitanicModel, initTitanic
+from model.points import Points, initPoints
 # server only Views
 
 # register URIs for api endpoints
@@ -56,6 +58,7 @@ app.register_blueprint(nestImg_api)
 app.register_blueprint(vote_api)
 app.register_blueprint(car_api)
 app.register_blueprint(titanic_api)
+app.register_blueprint(points_api)
 
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
@@ -157,6 +160,7 @@ custom_cli = AppGroup('custom', help='Custom commands')
 @custom_cli.command('generate_data')
 def generate_data():
     initUsers()
+    initPoints()
     initTitanic()  # Initialize Titanic data
     initSections()
     initGroups()
@@ -183,6 +187,7 @@ def extract_data():
         data['users'] = [user.read() for user in User.query.all()]
         data['sections'] = [section.read() for section in Section.query.all()]
         data['groups'] = [group.read() for group in Group.query.all()]
+        data['points'] = [points.read() for points in Points.query.all()]
         data['channels'] = [channel.read() for channel in Channel.query.all()]
         data['posts'] = [post.read() for post in Post.query.all()]
     return data
@@ -209,6 +214,7 @@ def restore_data(data):
     with app.app_context():
         users = User.restore(data['users'])
         _ = Section.restore(data['sections'])
+        _ = Points.restore(data['points'])
         _ = Group.restore(data['groups'], users)
         _ = Channel.restore(data['channels'])
         _ = Post.restore(data['posts'])
