@@ -141,7 +141,8 @@ def initPoints():
         tester_data = [
             Points(user='user1', points=100),
             Points(user='user2', points=200),
-            Points(user='user3', points=300)
+            Points(user='user3', points=300),
+            Points(user='niko', points=400)
         ]
         
         for data in tester_data:
