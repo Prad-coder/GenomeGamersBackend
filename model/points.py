@@ -5,17 +5,17 @@ class Points(db.Model):
     """
     Points Model
     
-    The Points class represents the points data for a user in an adventure game.
+    The Points class represents the total points data for a user.
     
     Attributes:
         id (db.Column): The primary key, an integer representing the unique identifier for the record.
         user (db.Column): A string representing the username associated with the points.
-        points (db.Column): An integer representing the points earned by the user.
+        points (db.Column): An integer representing the total points earned by the user.
     """
     __tablename__ = 'points'
 
     id = db.Column(db.Integer, primary_key=True)
-    user = db.Column(db.String(255), nullable=False)
+    user = db.Column(db.String(255), nullable=False, unique=True)  # Ensure one entry per user
     points = db.Column(db.Integer, nullable=False)
 
     def __init__(self, user, points):
@@ -24,7 +24,7 @@ class Points(db.Model):
         
         Args:
             user (str): The username associated with the points.
-            points (int): The points earned by the user.
+            points (int): The total points earned by the user.
         """
         self.user = user
         self.points = points

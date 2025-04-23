@@ -21,7 +21,7 @@ class PointsAPI:
         @token_required()
         def post(self):
             """
-            Add a new points entry for the authenticated user.
+            Add points to the total points for the authenticated user.
             """
             current_user = g.current_user
             body = request.get_json()
@@ -32,22 +32,23 @@ class PointsAPI:
                 return {'message': 'Invalid points provided'}, 400
 
             try:
-                # Ensure no existing entry exists
-                existing_points = Points.query.filter_by(user=current_user.uid).first()
-                if existing_points:
-                    return {'message': 'Points entry already exists'}, 400
+                # Fetch or create the user's points entry
+                points_entry = Points.query.filter_by(user=current_user.uid).first()
+                if not points_entry:
+                    points_entry = Points(user=current_user.uid, points=0)
 
-                # Create a new points entry
-                new_points = Points(user=current_user.uid, points=points)
-                new_points.create()
-                return jsonify({'message': 'Points added successfully', 'points': new_points.read()})
+                # Add points to the total
+                points_entry.points += points
+                points_entry.create()  # Save changes to the database
+
+                return jsonify({'message': 'Points added successfully', 'total_points': points_entry.points})
             except Exception as e:
-                return {'message': 'Failed to create points', 'error': str(e)}, 500
+                return {'message': 'Failed to add points', 'error': str(e)}, 500
 
         @token_required()
         def put(self):
             """
-            Update an existing points entry for the authenticated user.
+            Update the total points for the authenticated user.
             """
             current_user = g.current_user
             body = request.get_json()
@@ -58,32 +59,32 @@ class PointsAPI:
                 return {'message': 'Invalid points provided'}, 400
 
             try:
-                # Fetch and update the user's points entry
+                # Fetch the user's points entry
                 points_entry = Points.query.filter_by(user=current_user.uid).first()
                 if not points_entry:
                     return {'message': 'No points entry found to update'}, 404
 
+                # Update the total points
                 points_entry.points = points
                 points_entry.create()  # Save changes to the database
-                return jsonify({'message': 'Points updated successfully', 'points': points_entry.read()})
+
+                return jsonify({'message': 'Points updated successfully', 'total_points': points_entry.points})
             except Exception as e:
                 return {'message': 'Failed to update points', 'error': str(e)}, 500
 
         @token_required()
         def get(self):
             """
-            Get the current user's points entry.
+            Get the total points for the authenticated user.
             """
             current_user = g.current_user
 
             try:
-                current_app.logger.debug(f"Fetching points for user: {current_user.uid}")
+                # Fetch the user's points entry
                 points_entry = Points.query.filter_by(user=current_user.uid).first()
                 if points_entry:
-                    current_app.logger.debug(f"Points entry found: {points_entry.read()}")
-                    return jsonify({'message': 'Points retrieved successfully', 'points': points_entry.read()})
+                    return jsonify({'message': 'Total points retrieved successfully', 'total_points': points_entry.points})
                 else:
-                    current_app.logger.debug("No points entry found for the user")
                     return {'message': 'No points entry found for the user'}, 404
             except Exception as e:
                 current_app.logger.error(f"Error retrieving points: {str(e)}")
@@ -92,7 +93,7 @@ class PointsAPI:
         @token_required()
         def delete(self):
             """
-            Delete an existing points entry for the authenticated user.
+            Delete the points entry for the authenticated user.
             """
             current_user = g.current_user
 
