@@ -29,6 +29,7 @@ from api.carChat import car_chat_api
 from api.titanic import titanic_api
 from api.points import points_api
 from api.editing import editing_api
+from api.mutations import mutations_api
 
 from api.vote import vote_api
 # database Initialization functions
@@ -43,6 +44,7 @@ from model.vote import Vote, initVotes
 from model.titanic import TitanicModel, initTitanic
 from model.points import Points, initPoints
 from model.editing import model
+from model.mutations import model
 # server only Views
 
 # register URIs for api endpoints
@@ -62,6 +64,7 @@ app.register_blueprint(car_api)
 app.register_blueprint(titanic_api)
 app.register_blueprint(points_api)
 app.register_blueprint(editing_api)
+app.register_blueprint(mutations_api)
 
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
@@ -194,6 +197,7 @@ def extract_data():
         data['channels'] = [channel.read() for channel in Channel.query.all()]
         data['posts'] = [post.read() for post in Post.query.all()]
         data['editing'] = [editing.read() for editing in model.query.all()]
+        data['mutations'] = [mutations.read() for mutations in model.query.all()]
     return data
 
 # Save extracted data to JSON files
@@ -220,6 +224,7 @@ def restore_data(data):
         _ = Section.restore(data['sections'])
         _ = Points.restore(data['points'])
         _ = model.restore(data['editing'])
+        _ = model.restore(data['mutations'])
         _ = Group.restore(data['groups'], users)
         _ = Channel.restore(data['channels'])
         _ = Post.restore(data['posts'])
