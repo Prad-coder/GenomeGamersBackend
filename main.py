@@ -9,6 +9,7 @@ from flask_login import current_user, login_required
 from flask import current_app
 from werkzeug.security import generate_password_hash
 import shutil
+from api.predict import predict_blueprint  # Import the predict API blueprint
 
 
 
@@ -68,7 +69,6 @@ app.register_blueprint(mutations_api)
 
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
-
 @login_manager.unauthorized_handler
 def unauthorized_callback():
     return redirect(url_for('login', next=request.path))
@@ -245,6 +245,7 @@ def restore_data_command():
     
 # Register the custom command group with the Flask application
 app.cli.add_command(custom_cli)
+
         
 # this runs the flask application on the development server
 if __name__ == "__main__":
