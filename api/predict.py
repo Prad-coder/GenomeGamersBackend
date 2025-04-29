@@ -1,32 +1,34 @@
 from flask import Blueprint, request, jsonify
+from joblib import load
+import numpy as np
 
 predict_blueprint = Blueprint('predict', __name__)
 
-# ---- Dummy risk model (for now) ----
-def simple_risk_model(vaccines_allocated, region_population):
-    coverage = vaccines_allocated / region_population
-    if coverage > 0.7:
-        return 'low'
-    elif coverage > 0.5:
-        return 'moderate'
-    elif coverage > 0.3:
-        return 'high'
-    else:
-        return 'extreme'
+# Load your real ML model
+model = load('models/outbreak_model.pkl')
 
 @predict_blueprint.route('/predict', methods=['POST'])
 def predict():
     try:
         data = request.get_json()
-        region = data.get('region')
         vaccines = data.get('vaccines')
-        population = data.get('population')
+        fully_vaccinated = data.get('fully_vaccinated')
+        daily_vaccinations = data.get('daily_vaccinations')
+        distributed = data.get('distributed')
 
-        if not all([region, vaccines, population]):
+        if not all([vaccines, fully_vaccinated, daily_vaccinations, distributed]):
             return jsonify({'error': 'Missing parameters'}), 400
 
-        risk_level = simple_risk_model(vaccines, population)
-        return jsonify({'region': region, 'risk': risk_level})
+        # Create features same as during training
+        vacc_rate = fully_vaccinated / (distributed + 1)
+        features = np.array([[vaccines, fully_vaccinated, daily_vaccinations, vacc_rate]])
+
+        prediction = model.predict(features)[0]
+
+        risk_levels = ['low', 'moderate', 'high', 'extreme']  # must match order from your label encoder
+        risk = risk_levels[prediction]
+
+        return jsonify({'risk': risk})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
