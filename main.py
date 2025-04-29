@@ -9,6 +9,7 @@ from flask_login import current_user, login_required
 from flask import current_app
 from werkzeug.security import generate_password_hash
 import shutil
+from api.predict import predict_blueprint  # Import the predict API blueprint
 
 
 
@@ -62,6 +63,7 @@ app.register_blueprint(car_api)
 app.register_blueprint(titanic_api)
 app.register_blueprint(points_api)
 app.register_blueprint(editing_api)
+app.register_blueprint(predict_blueprint)  # Register the predict API blueprint
 
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
