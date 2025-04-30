@@ -9,8 +9,7 @@ from flask_login import current_user, login_required
 from flask import current_app
 from werkzeug.security import generate_password_hash
 import shutil
-from api.predict import predict_blueprint  # Import the predict API blueprint
-
+from api.outbreak import outbreak_api
 
 
 # import "objects" from "this" project
@@ -27,7 +26,7 @@ from api.nestPost import nestPost_api # Justin added this, custom format for his
 from api.messages_api import messages_api # Adi added this, messages for his website
 from api.carphoto import car_api
 from api.carChat import car_chat_api
-from api.titanic import titanic_api
+# from api.titanic import titanic_api
 from api.points import points_api
 from api.editing import editing_api
 from api.mutations import mutations_api
@@ -62,10 +61,11 @@ app.register_blueprint(nestPost_api)
 app.register_blueprint(nestImg_api)
 app.register_blueprint(vote_api)
 app.register_blueprint(car_api)
-app.register_blueprint(titanic_api)
+# app.register_blueprint(titanic_api)
 app.register_blueprint(points_api)
 app.register_blueprint(editing_api)
 app.register_blueprint(mutations_api)
+app.register_blueprint(outbreak_api, url_prefix='/api')
 
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
