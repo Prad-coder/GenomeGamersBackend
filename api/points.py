@@ -85,7 +85,7 @@ class PointsAPI:
                 if points_entry:
                     return jsonify({'message': 'Total points retrieved successfully', 'total_points': points_entry.points})
                 else:
-                    return {'message': '0'}, 404
+                    return {'message': 'No points entry found for the user'}, 404
             except Exception as e:
                 current_app.logger.error(f"Error retrieving points: {str(e)}")
                 return {'message': 'Failed to retrieve points', 'error': str(e)}, 500
